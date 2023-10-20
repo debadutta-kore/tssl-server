@@ -1,5 +1,4 @@
 const uuid = require("uuid").v4;
-const { getSession } = require("../api/db");
 
 const sessionMiddleware = (req, res, next) => {
   if (!req?.signedCookies?.sessionId) {
