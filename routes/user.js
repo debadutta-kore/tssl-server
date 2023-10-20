@@ -1,4 +1,4 @@
-const { addUser, updateUser, deleteUser, getUser } = require("../api/db");
+const { addUser, updateUser, deleteUser, getUser } = require("../db");
 const bcrypt = require('bcrypt');
 module.exports.addUserData = (req, res, next) => {
   addUser({

@@ -3,7 +3,7 @@ const {
   deleteUsecase,
   updateUsecase,
   getUsecase,
-} = require("../api/db");
+} = require("../db");
 
 module.exports.addUsecaseData = (req, res, next) => {
   getUsecase({ query: { usecaseId: req.body.usecaseId,userId: req.body.userId } })

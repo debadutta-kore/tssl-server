@@ -4,7 +4,7 @@ const {
   getUser,
   saveSession,
   getSession,
-} = require("../api/db");
+} = require("../db");
 
 const bcrypt = require("bcrypt");
 module.exports.login = (req, res, next) => {
