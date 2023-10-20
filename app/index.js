@@ -7,6 +7,20 @@ const cors = require("cors");
 const serverless = require('serverless-http');
 const apiRouter = require("../routes");
 const sessionMiddleware = require("../middlewares/sessionMiddleWare");
+// const allowedOrigins = ['https://example.com', 'https://another-allowed-origin.com'];
+
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true,
+// };
+
+
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser("2@]>+k70fX8S:74Ou0Dz7:XPvk"));

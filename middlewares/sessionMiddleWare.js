@@ -14,9 +14,6 @@ const sessionMiddleware = (req, res, next) => {
       expires: new Date(Date.now() + 30 * 60 * 1000)
     });
   }
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authortization');
-  res.setHeader('Acces-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
   next();
 };
 
