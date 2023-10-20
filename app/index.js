@@ -10,6 +10,9 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser("2@]>+k70fX8S:74Ou0Dz7:XPvk"));
 app.use(sessionMiddleware);
+app.use('/',(req,res)=>{
+    res.send('<h1> Kore.ai </h1>');
+});
 app.use("/api", apiRouter);
 
 module.exports = app;
