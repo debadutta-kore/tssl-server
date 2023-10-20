@@ -8,13 +8,16 @@ const sessionMiddleware = (req, res, next) => {
     req.sessionId = sessionId;
   } else {
     // Extract the session ID from the cookie
-    req.sessionId  = req.signedCookies.sessionId
-    res.cookie('sessionId',req.sessionId,{
+    req.sessionId = req.signedCookies.sessionId
+    res.cookie('sessionId', req.sessionId, {
       signed: true,
       httpOnly: true,
       expires: new Date(Date.now() + 30 * 60 * 1000)
     });
   }
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authortization');
+  res.setHeader('Acces-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
   next();
 };
 
