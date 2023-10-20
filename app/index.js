@@ -13,6 +13,12 @@ app.use(sessionMiddleware);
 app.get('/',(req,res)=>{
     res.send('<h1> Kore.ai </h1>');
 });
+app.get('/hi',(req,res)=>{
+    res.send('<h1> Kore.ai </h1>');
+});
+app.get('/hi/hello',(req,res)=>{
+    res.send('<h1> Kore.ai </h1>');
+});
 app.use("/api", apiRouter);
 
 module.exports = app;
