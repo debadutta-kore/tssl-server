@@ -18,4 +18,5 @@ app.get('/',(req,res)=>{
 
 app.use("/api", apiRouter);
 
-module.exports = serverless(app);
+module.exports.app=app;
+module.exports.handler = serverless(app);
