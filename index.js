@@ -1,10 +1,10 @@
 const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = express();
 const cors = require("cors");
-const apiRouter = require("../routes");
+const apiRouter = require("./routes");
 const sessionMiddleware = require("../middlewares/sessionMiddleWare");
 // const allowedOrigins = ['https://example.com', 'https://another-allowed-origin.com'];
 
