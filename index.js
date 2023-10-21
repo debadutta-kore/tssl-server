@@ -5,7 +5,8 @@ const cookieParser = require("cookie-parser");
 const app = express();
 const cors = require("cors");
 const apiRouter = require("./routes");
-const sessionMiddleware = require("../middlewares/sessionMiddleWare");
+const sessionMiddleware = require("./middlewares/sessionMiddleWare");
+
 // const allowedOrigins = ['https://example.com', 'https://another-allowed-origin.com'];
 
 // const corsOptions = {
