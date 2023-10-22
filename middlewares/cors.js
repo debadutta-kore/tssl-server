@@ -10,6 +10,9 @@ module.exports = function (req, res, next) {
  
      // Set to true if you need the website to include cookies in the requests sent
      res.setHeader('Access-Control-Allow-Credentials', true);
- 
+
+     //Set to not let browser send preflight request prior to each api request (in second)
+     res.setHeader('Access-Control-Max-Age', 7200);
+
      next();
 };
