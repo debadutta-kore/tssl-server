@@ -21,4 +21,5 @@ app.get('/',(req,res)=>{
 });
 
 app.use("/api", apiRouter);
+
 module.exports.app = app;
