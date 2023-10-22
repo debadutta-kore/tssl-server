@@ -1,22 +1,3 @@
-const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const app = express();
-const apiRouter = require("./routes");
-const sessionMiddleware = require("./middlewares/sessionMiddleWare");
-const cors = require("./middlewares/cors");
-
-app.use(cors);
-app.use(express.json());
-app.use(cookieParser("2@]>+k70fX8S:74Ou0Dz7:XPvk"));
-app.use(sessionMiddleware);
-
-app.get('/',(req,res)=>{
-    res.send('<h1> Kore.ai </h1>');
-});
-
-app.use("/api", apiRouter);
-
+const { app } = require("./app");
 
 app.listen(3000, () => console.log('app listening on port 3000!'));

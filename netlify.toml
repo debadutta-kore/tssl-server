@@ -1,0 +1,7 @@
+[functions]
+  external_node_modules = ["express", "axios", "bcrypt", "cookie-parser", "dotenv", "uuid"]
+[[redirects]]
+  force = true
+  from = "/api/*"
+  status = 200
+  to = "/.netlify/functions/api/:splat"
