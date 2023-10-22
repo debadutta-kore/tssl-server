@@ -3,7 +3,6 @@ require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = express();
-const serverless = require('serverless-http');
 const apiRouter = require("../routes");
 const sessionMiddleware = require("../middlewares/sessionMiddleWare");
 const cors = require("../middlewares/cors");
@@ -18,6 +17,4 @@ app.get('/',(req,res)=>{
 });
 
 app.use("/api", apiRouter);
-
 module.exports.app = app;
-module.exports.handler = serverless(api);
