@@ -1,6 +1,6 @@
 [build]
  command = "npm run build"
- src = "netlify/functions"
+ src = "netlify/functions/*"
  functions = "dist"
 [functions]
   external_node_modules = ["express", "axios", "bcrypt", "cookie-parser", "dotenv", "uuid"]
