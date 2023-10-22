@@ -14,6 +14,7 @@ app.use(cors);
 app.use(express.json());
 app.use(cookieParser("2@]>+k70fX8S:74Ou0Dz7:XPvk"));
 app.use(sessionMiddleware);
+
 app.use("/api", apiRouter);
 
 app.get('/',(req,res)=>{
