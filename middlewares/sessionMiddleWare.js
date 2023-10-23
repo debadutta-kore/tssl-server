@@ -1,3 +1,5 @@
+const { getRows } = require("../db");
+
 const uuid = require("uuid").v4;
 
 const sessionMiddleware = (req, res, next) => {
@@ -14,7 +16,18 @@ const sessionMiddleware = (req, res, next) => {
       expires: new Date(Date.now() + 30 * 60 * 1000)
     });
   }
-  next();
+  getRows('userSession',{
+    query:{
+      sessionId: req.sessionId
+    }
+  }).then(response=>{
+    if(response.data.records.length > 0) {
+      req.sessionData = response.data.records[0];
+    } else {
+      req.sessionData = null;
+    }
+    next()
+  }).catch(next)
 };
 
 module.exports = sessionMiddleware;

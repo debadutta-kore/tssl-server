@@ -1,23 +1,36 @@
-const { addUser, updateUser, deleteUser, getUser } = require("../db");
-const bcrypt = require('bcrypt');
+const {
+  addRow,
+  deleteRow,
+  getRows,
+  updateRow,
+} = require("../db");
+const bcrypt = require("bcrypt");
+
 module.exports.addUserData = (req, res, next) => {
-  addUser({
+  addRow("user", {
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 10),
     name: req.body.name,
-    role: req.body.role
+    role: req.params.role,
+    enable: 1,
   })
     .then((response) => {
-      res.status(200).json({
-        name: response.data.name,
-        id: response.data._id
-      })
+      if (response.data) {
+        res.status(201).send({
+          name: response.data.name,
+          id: response.data._id,
+        });
+      } else {
+        res.status(400).send({
+          message: "Unable to add user",
+        });
+      }
     })
     .catch(next);
 };
 
 module.exports.updateUserData = (req, res, next) => {
-  updateUser({
+  updateRow('user', {
     query: {
       expressions: [
         {
@@ -26,44 +39,97 @@ module.exports.updateUserData = (req, res, next) => {
           value: req.body.email,
         },
         {
-          field: "password",
+          field: "role",
           operand: "=",
-          value: req.body.currentPassword,
+          value: req.params.role,
         },
       ],
-      operator:'and',
-      data: {
-        password: req.body.resetPassword,
-      },
+      operator: "and",
     },
+    data: {
+      password: bcrypt.hashSync(req.body.resetPassword, 10),
+    }
   })
     .then((response) => {
-      res.status(200).send();
+      if (response.data && response.data.nModified === 1) {
+        res.status(200).send({
+          message: 'Password is updated successfully'
+        });
+      } else {
+        res.status(400).send({ message: 'Invalid email or password' });
+      }
     })
     .catch(next);
 };
 
 module.exports.deleteUserData = (req, res, next) => {
-  deleteUser(req.body.id)
+  deleteRow("user", req.params.id)
     .then((response) => {
-        res.status(200).send({isDeleted: true});
+      if (response.data && response.data.nDeleted === 1) {
+        res.status(204).send({ message: "Successfully delete user" });
+      } else {
+        res.status(404).send({ message: "Unable to delete usecase" });
+      }
     })
     .catch(next);
 };
 
 module.exports.getAllUserData = (req, res, next) => {
-  getUser({
-    query:{
-      role: req.body.role
-    }
+  getRows('user', {
+    query: {
+      role: req.params.role,
+    },
   })
     .then((response) => {
-        res.status(200).json(response.data.records.map((user)=>{
-          return {
-            name: user.name,
-            id: user._id
-          }
-        }));
+      if (response.data && response.data.records.length > 0) {
+        res.status(200).send(
+          response.data.records.map((user) => {
+            return {
+              name: user.name,
+              id: user._id,
+            };
+          })
+        );
+      } else {
+        res.status(404).send({ message: 'Unable to fetch user' });
+      }
     })
     .catch(next);
+};
+
+module.exports.activeDeactiveUser = (req, res, next) => {
+  if (req.params.status === 'block' || req.params.status === 'unblock') {
+    updateRow('user', {
+      query: {
+        expressions: [
+          {
+            field: "_id",
+            operand: "=",
+            value: req.sessionData.userId,
+          },
+          {
+            field: "role",
+            operand: "=",
+            value: req.params.role,
+          },
+        ],
+        operator: "and",
+      },
+      data: {
+        enable: req.params.status === 'unblock'
+      }
+    })
+      .then((response) => {
+        if (response.data && response.data.nModified === 1) {
+          res.status(200).send({
+            message: `The user account is ${req.params.status} successfully`
+          });
+        } else {
+          res.status(400).send({ message: `The unable to ${req.params.status} user account` });
+        }
+      })
+      .catch(next);
+  } else {
+    res.status(404).send({ message: 'route not found' });
+  }
 };
