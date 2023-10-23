@@ -77,7 +77,6 @@ module.exports.loginWithSession = (req, res, next) => {
           },
           message: "Successfully Logedin",
         };
-
         if (record.role === "admin") {
           data.data.choosedUser = !!record.userId;
         }
