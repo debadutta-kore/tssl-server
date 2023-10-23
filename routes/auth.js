@@ -26,7 +26,10 @@ module.exports.login = (req, res, next) => {
               [response.data.records[0].role === "admin"
                 ? "userId"
                 : "adminId"]: "",
-              name: response.data.records[0].role === "user" ? response.data.records[0].name : '',
+              name:
+                response.data.records[0].role === "user"
+                  ? response.data.records[0].name
+                  : "",
               role: response.data.records[0].role,
             })
               .then(() => {
@@ -35,7 +38,7 @@ module.exports.login = (req, res, next) => {
                   signed: true,
                   httpOnly: true,
                   secure: true,
-                  sameSite: 'None',
+                  sameSite: "None",
                   expires: new Date(Date.now() + 30 * 60 * 1000),
                 });
                 res.status(200).send({
@@ -66,7 +69,7 @@ module.exports.login = (req, res, next) => {
 module.exports.loginWithSession = (req, res, next) => {
   getRows("userSession", {
     query: {
-      sessionId: req.sessionId
+      sessionId: req.sessionId,
     },
   })
     .then((dbRes) => {
@@ -100,8 +103,8 @@ module.exports.deleteUserSession = (req, res, next) => {
         res.cookie("sessionId", req.sessionId, {
           signed: true,
           httpOnly: true,
-          secure: true ,
-          sameSite: 'None',
+          secure: true,
+          sameSite: "None",
           expires: new Date(Date.now() - 30 * 60 * 1000),
         });
         res.status(204).send();
@@ -113,29 +116,42 @@ module.exports.deleteUserSession = (req, res, next) => {
 };
 
 module.exports.updateUserSession = (req, res, next) => {
-  updateRow("userSession", {
-    query: {
-      expressions: [
-        {
-          field: "sessionId",
-          operand: "=",
-          value: req.sessionId,
-        },
-      ],
-      operator: "and",
-    },
-    data: {
-      userId: req.body.userId,
-      name: req.body.name,
-    },
+  getRows("user", {
+    _id: req.body.userId,
   })
-    .then((response) => {
-      if (response.data && response.data.nModified === 1) {
-        res.status(200).send({
-          message: "successfully update the session"
-        });
+    .then((dbRes) => {
+      if (dbRes.data && dbRes.data.records.length > 0) {
+        updateRow("userSession", {
+          query: {
+            expressions: [
+              {
+                field: "sessionId",
+                operand: "=",
+                value: req.sessionId,
+              },
+            ],
+            operator: "and",
+          },
+          data: {
+            userId: req.body.userId,
+            name: dbRes.data.records[0].name,
+          },
+        })
+          .then((response) => {
+            if (response.data && response.data.nModified === 1) {
+              res.status(200).send({
+                message: "successfully update the session",
+                data: {
+                  name: dbRes.data.records[0].name
+                }
+              });
+            } else {
+              res.status(404).send({ message: "session not found" });
+            }
+          })
+          .catch(next);
       } else {
-        res.status(404).send({ message: "session not found" });
+        res.status(404).send({ message: "user not found" });
       }
     })
     .catch(next);
