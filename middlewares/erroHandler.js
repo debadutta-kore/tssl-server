@@ -2,6 +2,7 @@ const { AxiosError } = require("axios");
 
 module.exports = function(err,_,res,next){
     if(err) {
+        console.log(err);
         if(typeof err === 'object') {
             if(err instanceof AxiosError) {
                 if (err.response) {
