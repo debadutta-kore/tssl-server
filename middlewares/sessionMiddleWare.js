@@ -12,6 +12,7 @@ const sessionMiddleware = (req, res, next) => {
     req.sessionId = req.signedCookies.sessionId
     res.cookie('sessionId', req.sessionId, {
       signed: true,
+      secure: true,
       httpOnly: true,
       sameSite: 'None',
       expires: new Date(Date.now() + 30 * 60 * 1000)
