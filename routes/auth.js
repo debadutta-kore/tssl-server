@@ -82,9 +82,6 @@ module.exports.loginWithSession = (req, res, next) => {
           },
           message: "Successfully Logedin",
         };
-        if (record.role === "admin") {
-          data.data.choosedUser = !!record.userId;
-        }
         res.status(200).json(data);
       } else {
         res.status(401).send({
@@ -115,44 +112,40 @@ module.exports.deleteUserSession = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.updateUserSession = (req, res, next) => {
-  getRows("user", {
-    _id: req.body.userId,
-  })
-    .then((dbRes) => {
-      if (dbRes.data && dbRes.data.records.length > 0) {
-        updateRow("userSession", {
-          query: {
-            expressions: [
-              {
-                field: "sessionId",
-                operand: "=",
-                value: req.sessionId,
-              },
-            ],
-            operator: "and",
-          },
+module.exports.updateUserSession = async (req, res, next) => {
+  try {
+    const user = await getRows('user', {_id: req.body.userId })
+    if(user.data && user.data.records.length > 0) {
+      const updateRes = await updateRow("userSession", {
+        query: {
+          expressions: [
+            {
+              field: "sessionId",
+              operand: "=",
+              value: req.sessionId,
+            },
+          ],
+          operator: "and",
+        },
+        data: {
+          userId: req.body.userId,
+          name: user.data.records[0].name,
+        },
+      });
+      if(updateRes.data && updateRes.data.nModified === 1) {
+        res.status(200).send({
+          message: "successfully update the session",
           data: {
-            userId: req.body.userId,
-            name: dbRes.data.records[0].name,
+            name: user.data.records[0].name,
           },
-        })
-          .then((response) => {
-            if (response.data && response.data.nModified === 1) {
-              res.status(200).send({
-                message: "successfully update the session",
-                data: {
-                  name: dbRes.data.records[0].name
-                }
-              });
-            } else {
-              res.status(404).send({ message: "session not found" });
-            }
-          })
-          .catch(next);
+        });
       } else {
-        res.status(404).send({ message: "user not found" });
+        res.status(404).send({ message: "session not found" });
       }
-    })
-    .catch(next);
+    } else {
+      res.status(400).send();
+    }
+  } catch(err) {
+    next(err);
+  }
 };
