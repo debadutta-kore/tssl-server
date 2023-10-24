@@ -48,10 +48,10 @@ module.exports.login = (req, res, next) => {
               })
               .catch(next);
           } else {
-            res.status(401).send({ message: "Wrong password" });
+            res.status(400).send({ password: "Wrong password" });
           }
         } else {
-          res.status(404).send({ message: "User not found" });
+          res.status(400).send({ email: "Wrong email Id" });
         }
       })
       .catch(next);
