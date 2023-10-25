@@ -26,7 +26,7 @@ const sessionMiddleware = (req, res, next) => {
       if(response.data.records.length > 0) {
         req.sessionData = response.data.records[0];
       } else {
-        next({status: 401, message:'Invalid Session'})
+        res.status(401).send({message: "Unauthorized access to current route"});
       }
       next()
     }).catch(next)

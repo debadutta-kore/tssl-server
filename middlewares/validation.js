@@ -1,13 +1,10 @@
-const { body } = require("express-validator");
-
 module.exports = (schema) => {
-    return [
-        body().custom((value, { req }) => {
-          const errors = schema.validateSync(req.body, { abortEarly: false });
-          if (errors) {
-            throw errors.inner;
-          }
-          return true;
-        }),
-    ]
+  return (req, res, next) => {
+    try {
+      schema.validateSync(req.body, { abortEarly: true });
+      next();
+    } catch (err) {
+      res.status(400).send({message: err.message});
+    }
+  }
 }

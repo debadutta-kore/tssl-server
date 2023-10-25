@@ -11,13 +11,13 @@ module.exports.protectRoute = function (req,res,next) {
                 if(_res.data && _res.data.records.length > 0) {
                     next();
                 } else {
-                    next({status: 403, message: "Unauthorized access to current route"})
+                    res.status(401).send({message: "Unauthorized access to current route"});
                 }
             })
         } else {
             next();
         }
     } else {
-        next({status: 403, message:"Unauthorized access to current route"})
+        res.status(401).send({message: "Unauthorized access to current route"});
     }
 }

@@ -1,9 +1,4 @@
-const {
-  addRow,
-  deleteRow,
-  getRows,
-  updateRow,
-} = require("../db");
+const { addRow, deleteRow, getRows, updateRow, getRowById } = require("../db");
 const bcrypt = require("bcrypt");
 
 module.exports.addUserData = (req, res, next) => {
@@ -30,7 +25,7 @@ module.exports.addUserData = (req, res, next) => {
 };
 
 module.exports.updateUserData = (req, res, next) => {
-  updateRow('user', {
+  updateRow("user", {
     query: {
       expressions: [
         {
@@ -48,15 +43,15 @@ module.exports.updateUserData = (req, res, next) => {
     },
     data: {
       password: bcrypt.hashSync(req.body.password, 10),
-    }
+    },
   })
     .then((response) => {
       if (response.data && response.data.nModified === 1) {
         res.status(200).send({
-          message: 'Password is updated successfully'
+          message: "Password is updated successfully",
         });
       } else {
-        res.status(400).send({ message: 'Invalid email' });
+        res.status(400).send({ message: "Invalid email" });
       }
     })
     .catch(next);
@@ -75,7 +70,7 @@ module.exports.deleteUserData = (req, res, next) => {
 };
 
 module.exports.getAllUserData = (req, res, next) => {
-  getRows('user', {
+  getRows("user", {
     query: {
       role: req.params.role,
     },
@@ -91,20 +86,21 @@ module.exports.getAllUserData = (req, res, next) => {
           })
         );
       } else {
-        res.status(404).send({ message: 'Unable to fetch user' });
+        res.status(404).send({ message: "Unable to fetch user" });
       }
     })
     .catch(next);
 };
 
 module.exports.activeDeactiveUser = (req, res, next) => {
-    updateRow('user', {
+  getRowById('user',req.sessionData.userId).then((_row)=>{
+    updateRow("user", {
       query: {
         expressions: [
           {
-            field: "_id",
+            field: "sys_Id",
             operand: "=",
-            value: req.sessionData.userId,
+            value: _row.data.sys_Id,
           },
           {
             field: "role",
@@ -115,17 +111,39 @@ module.exports.activeDeactiveUser = (req, res, next) => {
         operator: "and",
       },
       data: {
-        enable: req.body.enable
-      }
+        enable: req.body.enable,
+      },
     })
       .then((response) => {
+        const status = req.body.enable ? 'Enable' : 'Disable';
         if (response.data && response.data.nModified === 1) {
           res.status(200).send({
-            message: `The user account is ${req.params.status} successfully`
+            message: `The user account is ${status} successfully`,
           });
         } else {
-          res.status(400).send({ message: `The unable to ${req.params.status} user account` });
+          res
+            .status(400)
+            .send({ message: `The unable to ${status} user account` });
         }
       })
       .catch(next);
+  }).catch(next);
+};
+
+module.exports.getProfileDetails = (req, res, next) => {
+  getRowById("user", req.params.role === "admin"
+  ? req.sessionData.adminId
+  : req.sessionData.userId)
+    .then((dbRes) => {
+      if (dbRes.data) {
+        res.status(200).send({
+          id: dbRes.data._id,
+          name: dbRes.data.name,
+          enable: dbRes.data.enable,
+        });
+      } else {
+        res.status(400).send({ message: `${req.params.role} Not found` });
+      }
+    })
+    .catch(next);
 };

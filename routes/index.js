@@ -7,7 +7,8 @@ const {
     updateUserData,
     deleteUserData,
     getAllUserData,
-    activeDeactiveUser
+    activeDeactiveUser,
+    getProfileDetails
 } = require("./user");
 const {
     addUsecaseData,
@@ -28,8 +29,8 @@ router.delete("/auth/logout", protectRoute, deleteUserSession);
 router.post("/account/:role", protectRoute, addUserData);
 router.delete("/account/user/:id", protectRoute, deleteUserData);
 router.get("/account/:role", protectRoute, getAllUserData);
-router.put('/account/user/access', protectRoute , activeDeactiveUser);
-
+router.put('/account/:role/access', protectRoute , activeDeactiveUser);
+router.get('/account/:role/details', protectRoute, getProfileDetails);
 router.put("/account/resetpassword", validation(buildSchema({
     email: emailSchema,
     password: passwordSchema,

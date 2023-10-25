@@ -48,3 +48,11 @@ module.exports.deleteRow = async (from, id) => {
 module.exports.getRows = async (from,data)=>{
   return await request.post(`/tables/${from}/rows/query`,data);
 }
+
+module.exports.getRowById = async (from,id)=>{
+  return await request.get(`/tables/${from}/rows/${id}`);
+}
+
+module.exports.updateRowById = async(from, id, data)=>{
+  return await request.put(`/tables/${from}/rows/${id}`,{data});
+}
