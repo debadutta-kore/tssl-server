@@ -41,13 +41,13 @@ module.exports.updateUserData = (req, res, next) => {
         {
           field: "role",
           operand: "=",
-          value: req.params.role,
+          value: req.body.role,
         },
       ],
       operator: "and",
     },
     data: {
-      password: bcrypt.hashSync(req.body.resetPassword, 10),
+      password: bcrypt.hashSync(req.body.password, 10),
     }
   })
     .then((response) => {
@@ -56,7 +56,7 @@ module.exports.updateUserData = (req, res, next) => {
           message: 'Password is updated successfully'
         });
       } else {
-        res.status(400).send({ message: 'Invalid email or password' });
+        res.status(400).send({ message: 'Invalid email' });
       }
     })
     .catch(next);

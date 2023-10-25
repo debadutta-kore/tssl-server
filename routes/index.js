@@ -15,6 +15,8 @@ const {
     deleteUsecaseData,
     getAllUsecaseData,
 } = require("./usecases");
+const validation = require("../middlewares/validation");
+const { buildSchema, emailSchema, passwordSchema, roleSchema } = require("../utilities/validationSchema");
 
 // routes for authentication
 router.post("/auth/login", login);
@@ -27,7 +29,12 @@ router.post("/account/:role", protectRoute, addUserData);
 router.delete("/account/user/:id", protectRoute, deleteUserData);
 router.get("/account/:role", protectRoute, getAllUserData);
 router.put('/account/user/access', protectRoute , activeDeactiveUser);
-router.put("/account/:role", updateUserData);
+
+router.put("/account/resetpassword", validation(buildSchema({
+    email: emailSchema,
+    password: passwordSchema,
+    role: roleSchema
+})) , updateUserData);
 
 // routes for usecases
 router.post("/usecase/add", protectRoute, addUsecaseData);
