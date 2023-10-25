@@ -23,10 +23,10 @@ router.put('/auth/session', protectRoute, updateUserSession);
 router.delete("/auth/logout", protectRoute, deleteUserSession);
 
 // routes for users
-router.post("/account/:role", addUserData);
-router.delete("/account/:role/:id", protectRoute, deleteUserData);
+router.post("/account/:role", protectRoute, addUserData);
+router.delete("/account/user/:id", protectRoute, deleteUserData);
 router.get("/account/:role", protectRoute, getAllUserData);
-router.get('/account/:role/:status', protectRoute , activeDeactiveUser);
+router.put('/account/user/access', protectRoute , activeDeactiveUser);
 router.put("/account/:role", updateUserData);
 
 // routes for usecases

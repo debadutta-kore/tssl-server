@@ -43,23 +43,30 @@ module.exports.updateUsecaseData = (req, res, next) => {
     query: {
       expressions: [
         {
-          field: "_id",
+          field: "userId",
           operand: "=",
-          value: req.body.id,
+          value: req.sessionData.userId,
+        },
+        {
+            field: "usecaseId",
+            operand: "=",
+            value: req.body.usecaseId
         }
       ],
       operator: "and",
-      data: {
-        enable: req.body.enable,
-      },
     },
+    data: {
+      enable: req.body.enable,
+    }
   })
     .then((response) => {
-      const status = req.body.enable ? 'Enable' :'Disable';
       if(response.data && response.data.nModified === 1) {
         res
         .status(200)
-        .json({ message: `Successfully ${status} usecase`});
+        .json({
+          id: req.body.id,
+          enable: req.body.enable
+        });
       } else {
         res.status(404).send({message:'Unable to updated resource'});
       }

@@ -98,7 +98,6 @@ module.exports.getAllUserData = (req, res, next) => {
 };
 
 module.exports.activeDeactiveUser = (req, res, next) => {
-  if (req.params.status === 'block' || req.params.status === 'unblock') {
     updateRow('user', {
       query: {
         expressions: [
@@ -116,7 +115,7 @@ module.exports.activeDeactiveUser = (req, res, next) => {
         operator: "and",
       },
       data: {
-        enable: req.params.status === 'unblock'
+        enable: req.body.enable
       }
     })
       .then((response) => {
@@ -129,7 +128,4 @@ module.exports.activeDeactiveUser = (req, res, next) => {
         }
       })
       .catch(next);
-  } else {
-    res.status(404).send({ message: 'route not found' });
-  }
 };
