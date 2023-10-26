@@ -47,7 +47,7 @@ module.exports.login = (req, res, next) => {
             res.status(400).send({ password: "Wrong password" });
           }
         } else {
-          res.status(400).send({ email: "Wrong email Id" });
+          res.status(400).send({ email: "Wrong email Id or account is disable" });
         }
       })
       .catch(next);
