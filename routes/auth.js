@@ -7,11 +7,10 @@ module.exports.login = (req, res, next) => {
     getRows("user", {
       query: {
         email: req.body.email,
-        enable: 1,
       },
     })
       .then(async (response) => {
-        if (response.data && response.data.records.length > 0) {
+        if (response.data && response.data?.records?.length === 1 && response.data.records[0].enable === 1) {
           if (
             bcrypt.compareSync(
               req.body.password,
@@ -47,7 +46,11 @@ module.exports.login = (req, res, next) => {
             res.status(400).send({ password: "Wrong password" });
           }
         } else {
-          res.status(400).send({ email: "Wrong email Id or account is disable" });
+          if(response.data && response.data?.records?.length === 1 && response.data.records[0].enable === 0){
+            res.send(400).send({email:'Account is disabled'});
+          } else {
+            res.status(400).send({ email: "Wrong email Id" });
+          }
         }
       })
       .catch(next);
