@@ -86,6 +86,18 @@ module.exports.loginWithSession = (req, res, next) => {
         if(record.role === 'admin') {
           data.isChoosedUser = !!record.userId;
         }
+        const cookieSettings = {
+          signed: true,
+          httpOnly: true,
+          expires: new Date(Date.now() + 30 * 60 * 1000)
+        }
+        console.log(req.protocol);
+        if(req.protocol === 'https') {
+          cookieSettings['secure'] = true;
+          cookieSettings['sameSite'] = 'None';
+        } 
+        console.log(cookieSettings)
+        res.cookie("sessionId", req.sessionId, cookieSettings);
         res.status(200).json(data);
       } else {
         res.status(401).send({
