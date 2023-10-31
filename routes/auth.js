@@ -29,13 +29,17 @@ module.exports.login = (req, res, next) => {
             })
               .then(() => {
                 // Save the new session ID in the response
-                res.cookie("sessionId", req.sessionId, {
+                const cookieSettings = {
                   signed: true,
                   httpOnly: true,
-                  secure: true,
-                  sameSite: "None",
-                  expires: new Date(Date.now() + 30 * 60 * 1000),
-                });
+                  domain: new URL(req.get("origin")).host,
+                  expires: new Date(Date.now() + 30 * 60 * 1000)
+                }
+                if(req.protocol === 'https') {
+                  cookieSettings['secure'] = true;
+                  cookieSettings['sameSite'] = 'None';
+                } 
+                res.cookie("sessionId", req.sessionId, cookieSettings);
                 res.status(200).send({
                   message: "Successfully logged in",
                   role: response.data.records[0].role,
@@ -96,13 +100,17 @@ module.exports.deleteUserSession = (req, res, next) => {
   deleteRow("userSession", req.sessionData._id)
     .then((dbRes) => {
       if (dbRes.data && dbRes.data.nDeleted) {
-        res.cookie("sessionId", req.sessionId, {
+        const cookieSettings = {
           signed: true,
           httpOnly: true,
-          secure: true,
-          sameSite: "None",
-          expires: new Date(Date.now() - 30 * 60 * 1000),
-        });
+          domain: new URL(req.get("origin")).host,
+          expires: new Date(Date.now() - 30 * 60 * 1000)
+        }
+        if(req.protocol === 'https') {
+          cookieSettings['secure'] = true;
+          cookieSettings['sameSite'] = 'None';
+        } 
+        res.cookie("sessionId", req.sessionId, cookieSettings);
         res.status(204).send();
       } else {
         res.status(404).send({ message: "Unable to logout" });
