@@ -18,6 +18,8 @@ const {
 } = require("./usecases");
 const validation = require("../middlewares/validation");
 const { buildSchema, emailSchema, passwordSchema, roleSchema } = require("../utilities/validationSchema");
+const sendEmail = require("./sendEmail");
+const formDataParser = require("../middlewares/formDataParser");
 
 // routes for authentication
 router.post("/auth/login", login);
@@ -42,5 +44,8 @@ router.post("/usecase/add", protectRoute, addUsecaseData);
 router.put("/usecase/update", protectRoute, updateUsecaseData);
 router.delete("/usecase/delete/:id", protectRoute, deleteUsecaseData);
 router.get("/usecase/all", protectRoute, getAllUsecaseData);
+
+// email route
+router.post('/email',protectRoute, formDataParser, sendEmail);
 
 module.exports = router;
