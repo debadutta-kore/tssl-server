@@ -14,8 +14,8 @@ const sessionMiddleware = (req, res, next) => {
     res.cookie('sessionId', req.sessionId, {
       signed: true,
       httpOnly: true,
-      // sameSite: 'None',
-      // secure: true,
+      sameSite: 'None',
+      secure: true,
       expires: new Date(Date.now() + 30 * 60 * 1000)
     });
     getRows('userSession',{
