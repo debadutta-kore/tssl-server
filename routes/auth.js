@@ -34,10 +34,12 @@ module.exports.login = (req, res, next) => {
                   httpOnly: true,
                   expires: new Date(Date.now() + 30 * 60 * 1000)
                 }
+                console.log(req.protocol);
                 if(req.protocol === 'https') {
                   cookieSettings['secure'] = true;
                   cookieSettings['sameSite'] = 'None';
                 } 
+                console.log(cookieSettings)
                 res.cookie("sessionId", req.sessionId, cookieSettings);
                 res.status(200).send({
                   message: "Successfully logged in",
