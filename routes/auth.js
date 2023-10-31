@@ -32,13 +32,12 @@ module.exports.login = (req, res, next) => {
                 const cookieSettings = {
                   signed: true,
                   httpOnly: true,
-                  domain: new URL(req.get("origin")).host,
                   expires: new Date(Date.now() + 30 * 60 * 1000)
                 }
-                // if(req.protocol === 'https') {
-                //   cookieSettings['secure'] = true;
-                //   cookieSettings['sameSite'] = 'None';
-                // } 
+                if(req.protocol === 'https') {
+                  cookieSettings['secure'] = true;
+                  cookieSettings['sameSite'] = 'None';
+                } 
                 res.cookie("sessionId", req.sessionId, cookieSettings);
                 res.status(200).send({
                   message: "Successfully logged in",
@@ -103,13 +102,12 @@ module.exports.deleteUserSession = (req, res, next) => {
         const cookieSettings = {
           signed: true,
           httpOnly: true,
-          domain: new URL(req.get("origin")).host,
           expires: new Date(Date.now() - 30 * 60 * 1000)
         }
-        // if(req.protocol === 'https') {
-        //   cookieSettings['secure'] = true;
-        //   cookieSettings['sameSite'] = 'None';
-        // } 
+        if(req.protocol === 'https') {
+          cookieSettings['secure'] = true;
+          cookieSettings['sameSite'] = 'None';
+        } 
         res.cookie("sessionId", req.sessionId, cookieSettings);
         res.status(204).send();
       } else {

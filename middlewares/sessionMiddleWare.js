@@ -14,13 +14,12 @@ const sessionMiddleware = (req, res, next) => {
     const cookieSettings = {
       signed: true,
       httpOnly: true,
-      domain: new URL(req.get("origin")).host,
       expires: new Date(Date.now() + 30 * 60 * 1000),
     };
-    // if (req.protocol === "https") {c
-    //   cookieSettings["secure"] = true;
-    //   cookieSettings["sameSite"] = "None";
-    // }
+    if (req.protocol === "https") {c
+      cookieSettings["secure"] = true;
+      cookieSettings["sameSite"] = "None";
+    }
     res.cookie("sessionId", req.sessionId, cookieSettings);
     getRows("userSession", {
       query: {
