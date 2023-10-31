@@ -36,7 +36,7 @@ module.exports.login = (req, res, next) => {
                 }
                 if(req.protocol === 'https') {
                   cookieSettings['secure'] = true;
-                  cookieSettings['sameSite'] = 'None';
+                  cookieSettings['sameSite'] = 'Lax';
                 } 
                 res.cookie("sessionId", req.sessionId, cookieSettings);
                 res.status(200).send({
@@ -106,7 +106,7 @@ module.exports.deleteUserSession = (req, res, next) => {
         }
         if(req.protocol === 'https') {
           cookieSettings['secure'] = true;
-          cookieSettings['sameSite'] = 'None';
+          cookieSettings['sameSite'] = 'Lax';
         } 
         res.cookie("sessionId", req.sessionId, cookieSettings);
         res.status(204).send();

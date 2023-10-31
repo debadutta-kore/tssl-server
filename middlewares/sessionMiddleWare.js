@@ -18,7 +18,7 @@ const sessionMiddleware = (req, res, next) => {
     };
     if (req.protocol === "https") {c
       cookieSettings["secure"] = true;
-      cookieSettings["sameSite"] = "None";
+      cookieSettings["sameSite"] = "Lax";
     }
     res.cookie("sessionId", req.sessionId, cookieSettings);
     getRows("userSession", {
