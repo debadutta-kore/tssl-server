@@ -12,7 +12,7 @@ module.exports.addUsecaseData = (req, res, next) => {
           enable: 1,
         })
           .then((_res) => {
-            res.status(200).send({
+            res.status(201).send({
               usecaseId: req.body.usecaseId,
               enable: 1,
               id: _res.data._id,

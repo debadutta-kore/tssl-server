@@ -10,7 +10,11 @@ module.exports.login = (req, res, next) => {
       },
     })
       .then(async (response) => {
-        if (response.data && response.data?.records?.length === 1 && response.data.records[0].enable === 1) {
+        if (
+          response.data &&
+          response.data?.records?.length === 1 &&
+          response.data.records[0].enable === 1
+        ) {
           if (
             bcrypt.compareSync(
               req.body.password,
@@ -32,14 +36,12 @@ module.exports.login = (req, res, next) => {
                 const cookieSettings = {
                   signed: true,
                   httpOnly: true,
-                  expires: new Date(Date.now() + 30 * 60 * 1000)
+                  expires: new Date(Date.now() + 30 * 60 * 1000),
+                };
+                if (req.protocol === "https") {
+                  cookieSettings["secure"] = true;
+                  cookieSettings["sameSite"] = "None";
                 }
-                console.log(req.protocol);
-                if(req.protocol === 'https') {
-                  cookieSettings['secure'] = true;
-                  cookieSettings['sameSite'] = 'None';
-                } 
-                console.log(cookieSettings)
                 res.cookie("sessionId", req.sessionId, cookieSettings);
                 res.status(200).send({
                   message: "Successfully logged in",
@@ -51,8 +53,12 @@ module.exports.login = (req, res, next) => {
             res.status(400).send({ password: "Wrong password" });
           }
         } else {
-          if(response.data && response.data?.records?.length === 1 && response.data.records[0].enable === 0){
-            res.send(400).send({email:'Account is disabled'});
+          if (
+            response.data &&
+            response.data?.records?.length === 1 &&
+            response.data.records[0].enable === 0
+          ) {
+            res.send(400).send({ email: "Account is disabled" });
           } else {
             res.status(400).send({ email: "Wrong email Id" });
           }
@@ -80,23 +86,21 @@ module.exports.loginWithSession = (req, res, next) => {
       if (dbRes.data && dbRes.data.records.length > 0) {
         const record = dbRes.data.records[0];
         let data = {
-            role: record.role,
-            message: "Successfully Logedin",
+          role: record.role,
+          message: "Successfully Logedin",
         };
-        if(record.role === 'admin') {
+        if (record.role === "admin") {
           data.isChoosedUser = !!record.userId;
         }
         const cookieSettings = {
           signed: true,
           httpOnly: true,
-          expires: new Date(Date.now() + 30 * 60 * 1000)
+          expires: new Date(Date.now() + 30 * 60 * 1000),
+        };
+        if (req.protocol === "https") {
+          cookieSettings["secure"] = true;
+          cookieSettings["sameSite"] = "None";
         }
-        console.log(req.protocol);
-        if(req.protocol === 'https') {
-          cookieSettings['secure'] = true;
-          cookieSettings['sameSite'] = 'None';
-        } 
-        console.log(cookieSettings)
         res.cookie("sessionId", req.sessionId, cookieSettings);
         res.status(200).json(data);
       } else {
@@ -116,12 +120,12 @@ module.exports.deleteUserSession = (req, res, next) => {
         const cookieSettings = {
           signed: true,
           httpOnly: true,
-          expires: new Date(Date.now() - 30 * 60 * 1000)
+          expires: new Date(Date.now() - 30 * 60 * 1000),
+        };
+        if (req.protocol === "https") {
+          cookieSettings["secure"] = true;
+          cookieSettings["sameSite"] = "None";
         }
-        if(req.protocol === 'https') {
-          cookieSettings['secure'] = true;
-          cookieSettings['sameSite'] = 'None';
-        } 
         res.cookie("sessionId", req.sessionId, cookieSettings);
         res.status(204).send();
       } else {
@@ -146,13 +150,15 @@ module.exports.updateUserSession = async (req, res, next) => {
     data: {
       userId: req.body.userId,
     },
-  }).then((updateRes)=>{
-    if(updateRes.data && updateRes.data.nModified === 1) {
-      res.status(200).send({
-        message: "successfully update the session"
-      });
-    } else {
-      res.status(404).send({ message: "session not found" });
-    }
-  }).catch(next);
+  })
+    .then((updateRes) => {
+      if (updateRes.data && updateRes.data.nModified === 1) {
+        res.status(200).send({
+          message: "successfully update the session",
+        });
+      } else {
+        res.status(404).send({ message: "session not found" });
+      }
+    })
+    .catch(next);
 };

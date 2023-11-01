@@ -1,27 +1,44 @@
 const { addRow, deleteRow, getRows, updateRow, getRowById } = require("../db");
 const bcrypt = require("bcrypt");
+const url = require('url');
+const sendInvitation = require("../utilities/sendInvitation");
 
 module.exports.addUserData = (req, res, next) => {
-  addRow("user", {
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 10),
-    name: req.body.name,
-    role: req.params.role,
-    enable: 1,
-  })
-    .then((response) => {
-      if (response.data) {
-        res.status(201).send({
-          name: response.data.name,
-          id: response.data._id,
-        });
-      } else {
-        res.status(400).send({
-          message: "Unable to add user",
-        });
-      }
-    })
-    .catch(next);
+  getRows('user', {
+    query: {
+      email: req.body.email
+    }
+  }).then((_res) => {
+    if (_res.data && _res.data.records.length === 0) {
+      addRow("user", {
+        email: req.body.email,
+        password: bcrypt.hashSync(req.body.password, 10),
+        name: req.body.name,
+        role: req.params.role,
+        enable: 1,
+      })
+        .then((response) => {
+          if (response.data) {
+            if (req.params.role === 'user') {
+              sendInvitation(req.body.email, {
+                name: req.body.name, password: req.body.password, hostUrl: url.format({
+                  protocol: req.protocol,
+                  host: req.get('host'),
+                  pathname: req.originalUrl
+                })
+              })
+            }
+            res.status(201).send({
+              name: response.data.name,
+              id: response.data._id,
+            });
+          }
+        })
+        .catch(next);
+    } else {
+      res.status(400).send({ email: 'User already exist' });
+    }
+  }).catch(next)
 };
 
 module.exports.updateUserData = (req, res, next) => {
@@ -93,7 +110,7 @@ module.exports.getAllUserData = (req, res, next) => {
 };
 
 module.exports.activeDeactiveUser = (req, res, next) => {
-  getRowById('user',req.sessionData.userId).then((_row)=>{
+  getRowById('user', req.sessionData.userId).then((_row) => {
     updateRow("user", {
       query: {
         expressions: [
@@ -132,8 +149,8 @@ module.exports.activeDeactiveUser = (req, res, next) => {
 
 module.exports.getProfileDetails = (req, res, next) => {
   getRowById("user", req.params.role === "admin"
-  ? req.sessionData.adminId
-  : req.sessionData.userId)
+    ? req.sessionData.adminId
+    : req.sessionData.userId)
     .then((dbRes) => {
       if (dbRes.data) {
         res.status(200).send({

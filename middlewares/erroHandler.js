@@ -1,6 +1,6 @@
 const { AxiosError } = require("axios");
 
-module.exports = function (err, _, res, next) {
+module.exports = function (err, req, res, next) {
     if (err) {
         if (err instanceof AxiosError) {
             if (err.response) {
@@ -14,8 +14,9 @@ module.exports = function (err, _, res, next) {
                 res.status(500).send({ message: err.message });
             }
         } else {
-            res.status(500).send({ message: err.message });
+            res.status(500).send({ message: err.message || 'Internal Server Error' });
         }
+        next(err);
     } else {
         next();
     }
