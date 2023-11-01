@@ -36,13 +36,12 @@ module.exports.login = (req, res, next) => {
                 const cookieSettings = {
                   signed: true,
                   httpOnly: true,
-                  expires: new Date(Date.now() + 30 * 60 * 1000),
-                  sameSite: 'strict'
+                  expires: new Date(Date.now() + 30 * 60 * 1000)
                 };
-                // if (req.protocol === "https") {
-                //   cookieSettings["secure"] = true;
-                //   cookieSettings["sameSite"] = "strict";
-                // }
+                if (req.protocol === "https") {
+                  cookieSettings["secure"] = true;
+                  cookieSettings["sameSite"] = "None";
+                }
                 res.cookie("sessionId", req.sessionId, cookieSettings);
                 res.status(200).send({
                   message: "Successfully logged in",
