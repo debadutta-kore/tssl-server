@@ -36,7 +36,7 @@ module.exports.login = (req, res, next) => {
                 const cookieSettings = {
                   signed: true,
                   httpOnly: true,
-                  domain: 'delicate-marigold-3bd910.netlify.app',
+                  domain: '.netlify.app',
                   expires: new Date(Date.now() + 30 * 60 * 1000),
                 };
                 // if (req.protocol === "https") {
