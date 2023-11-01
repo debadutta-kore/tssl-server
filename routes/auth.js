@@ -58,7 +58,7 @@ module.exports.login = (req, res, next) => {
             response.data?.records?.length === 1 &&
             response.data.records[0].enable === 0
           ) {
-            res.send(400).send({ email: "Account is disabled" });
+            res.status(400).send({ email: "Account is disabled" });
           } else {
             res.status(400).send({ email: "Wrong email Id" });
           }
