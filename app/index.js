@@ -24,4 +24,8 @@ app.get("/", (req, res) => {
   res.send("<h1> Kore.ai </h1>");
 });
 
+app.options('*', (req, res) => {
+  res.status(200).end();
+});
+
 module.exports.app = app;
