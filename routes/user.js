@@ -17,10 +17,10 @@ module.exports.addUserData = (req, res, next) => {
         role: req.params.role,
         enable: 1,
       })
-        .then((response) => {
+        .then(async (response) => {
           if (response.data) {
             if (req.params.role === 'user') {
-              sendInvitation(req.body.email, {
+              await sendInvitation(req.body.email, {
                 name: req.body.name, password: req.body.password, hostUrl: url.format({
                   protocol: req.protocol,
                   host: req.get('host')
