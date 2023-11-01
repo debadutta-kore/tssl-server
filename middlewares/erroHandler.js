@@ -16,7 +16,6 @@ module.exports = function (err, req, res, next) {
         } else {
             res.status(500).send({ message: err.message || 'Internal Server Error' });
         }
-        next(err);
     } else {
         next();
     }
