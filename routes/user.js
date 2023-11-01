@@ -23,8 +23,7 @@ module.exports.addUserData = (req, res, next) => {
               sendInvitation(req.body.email, {
                 name: req.body.name, password: req.body.password, hostUrl: url.format({
                   protocol: req.protocol,
-                  host: req.get('host'),
-                  pathname: req.originalUrl
+                  host: req.get('host')
                 })
               })
             }
