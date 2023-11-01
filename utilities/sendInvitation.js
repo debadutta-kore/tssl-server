@@ -13,7 +13,7 @@ module.exports = async (to, { name, password, hostUrl }) => {
       productLogo: hostUrl + "/product-logo.png",
     });
     await mail.send({
-      from: "debadutta.panda@kore.com",
+      from: "travelassistdev@kore.com",
       to,
       subject: "Welcome to TSSL!",
       html: htmlStr,

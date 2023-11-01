@@ -2,8 +2,8 @@ const mail = require("@sendgrid/mail");
 module.exports = (req, res, next) => {
   mail
     .send({
-      from: "debadutta.panda@kore.com",
-      to: "debadebaduttapanda.7@gmail.com",
+      from: "travelassistdev@kore.com",
+      to: "foodassistdev@kore.com",
       subject: `${req.body.queryType}-${req.body.subject}`,
       text: req.body.description,
       attachments: req.files.map((file) => ({
