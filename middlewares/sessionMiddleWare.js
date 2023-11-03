@@ -15,11 +15,9 @@ const sessionMiddleware = (req, res, next) => {
       signed: true,
       httpOnly: true,
       expires: new Date(Date.now() + 30 * 60 * 1000),
+      secure: true,
+      sameSite: 'None',
     };
-    if (req.protocol === "https") {
-      cookieSettings["secure"] = true;
-      cookieSettings["sameSite"] = "None";
-    }
     res.cookie("sessionId", req.sessionId, cookieSettings);
     getRows("userSession", {
       query: {

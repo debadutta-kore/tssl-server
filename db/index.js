@@ -14,7 +14,7 @@ const request = axios.create({
       { algorithm: "HS256" }
     ),
   },
-  validateStatus: (status) => status <= 300,
+  validateStatus: (status) => status < 300,
 });
 
 module.exports.addRow = async (from, data) => {
