@@ -98,6 +98,7 @@ module.exports.getAllUserData = (req, res, next) => {
             return {
               name: user.name,
               id: user._id,
+              enable: user.enable
             };
           })
         );
