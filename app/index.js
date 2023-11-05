@@ -17,11 +17,12 @@ app.use(express.json());
 app.use(cookieParser("2@]>+k70fX8S:74Ou0Dz7:XPvk"));
 app.use(sessionMiddleware);
 app.use(express.static(path.join(__dirname, "../templates/img")));
+app.use(express.static(path.join(__dirname,'../client')))
 app.use("/api", apiRouter);
 app.use(erroHandler);
 
-app.get("/", (req, res) => {
-  res.send("<h1> Kore.ai </h1>");
+app.get("*", (_, res) => {
+  res.sendFile(path.join(__dirname,'../client/index.html'));
 });
 
 module.exports.app = app;

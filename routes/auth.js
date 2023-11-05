@@ -36,8 +36,6 @@ module.exports.login = (req, res, next) => {
                 const cookieSettings = {
                   signed: true,
                   httpOnly: true,
-                  secure: true,
-                  sameSite: 'None',
                   expires: new Date(Date.now() + 30 * 60 * 1000)
                 };
                 res.cookie("sessionId", req.sessionId, cookieSettings);
@@ -109,8 +107,6 @@ module.exports.deleteUserSession = (req, res, next) => {
           signed: true,
           httpOnly: true,
           expires: new Date(Date.now() - 30 * 60 * 1000),
-          secure: true,
-          sameSite: 'None',
         };
         res.cookie("sessionId", req.sessionId, cookieSettings);
         res.status(204).send();
