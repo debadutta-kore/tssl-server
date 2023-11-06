@@ -2,7 +2,6 @@ const mail = require("@sendgrid/mail");
 const { getRowById } = require("../db");
 const ejs = require('ejs');
 const path = require("path");
-//`From: ${_res.data.email}\nName: ${_res.data.name}\n${req.body.description}`,
 module.exports = (req, res, next) => {
   getRowById('user',
     req.sessionData.role === "user"
