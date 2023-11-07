@@ -1,42 +1,47 @@
 const { addRow, deleteRow, getRows, updateRow, getRowById } = require("../db");
-const url = require('url');
+const url = require("url");
 const sendInvitation = require("../utilities/sendInvitation");
 
 module.exports.addUserData = (req, res, next) => {
-  getRows('user', {
+  getRows("user", {
     query: {
-      email: req.body.email
-    }
-  }).then((_res) => {
-    if (_res.data && _res.data.records.length === 0) {
-      addRow("user", {
-        email: req.body.email,
-        password: req.body.password,
-        name: req.body.name,
-        role: req.params.role,
-        enable: 1,
-      })
-        .then(async (response) => {
-          if (response.data) {
-            if (req.params.role === 'user') {
-              await sendInvitation(req.body.email, {
-                name: req.body.name, password: req.body.password, hostUrl: url.format({
-                  protocol: req.protocol,
-                  host: req.get('host')
-                })
-              })
-            }
-            res.status(201).send({
-              name: response.data.name,
-              id: response.data._id,
-            });
-          }
+      email: req.body.email,
+    },
+  })
+    .then((_res) => {
+      if (_res.data && _res.data.records.length === 0) {
+        addRow("user", {
+          email: req.body.email,
+          password: req.body.password,
+          name: req.body.name,
+          role: req.params.role,
+          enable: 1,
         })
-        .catch(next);
-    } else {
-      res.status(400).send({ email: 'User already exist' });
-    }
-  }).catch(next)
+          .then(async (response) => {
+            if (response.data) {
+              if (req.params.role === "user") {
+                await sendInvitation(req.body.email, {
+                  name: req.body.name,
+                  password: req.body.password,
+                  hostUrl: url.format({
+                    protocol: req.protocol,
+                    host: req.get("host"),
+                  }),
+                });
+              }
+              res.status(201).send({
+                name: response.data.name,
+                id: response.data._id,
+                enable: 1,
+              });
+            }
+          })
+          .catch(next);
+      } else {
+        res.status(400).send({ email: "User already exist" });
+      }
+    })
+    .catch(next);
 };
 
 module.exports.updateUserData = (req, res, next) => {
@@ -47,7 +52,7 @@ module.exports.updateUserData = (req, res, next) => {
           field: "email",
           operand: "=",
           value: req.body.email,
-        }
+        },
       ],
       operator: "and",
     },
@@ -86,13 +91,13 @@ module.exports.getAllUserData = (req, res, next) => {
     },
   })
     .then((response) => {
-      if (response.data && response.data.records.length > 0) {
+      if (response.data && response.data.records) {
         res.status(200).send(
           response.data.records.map((user) => {
             return {
               name: user.name,
               id: user._id,
-              enable: user.enable
+              enable: user.enable,
             };
           })
         );
@@ -104,47 +109,52 @@ module.exports.getAllUserData = (req, res, next) => {
 };
 
 module.exports.activeDeactiveUser = (req, res, next) => {
-  getRowById('user', req.sessionData.userId).then((_row) => {
-    updateRow("user", {
-      query: {
-        expressions: [
-          {
-            field: "sys_Id",
-            operand: "=",
-            value: _row.data.sys_Id,
-          },
-          {
-            field: "role",
-            operand: "=",
-            value: req.params.role,
-          },
-        ],
-        operator: "and",
-      },
-      data: {
-        enable: req.body.enable,
-      },
-    })
-      .then((response) => {
-        const status = req.body.enable ? 'Enable' : 'Disable';
-        if (response.data && response.data.nModified === 1) {
-          res.status(200).send({
-            message: `The user account is ${status} successfully`,
-          });
-        } else {
-          res
-            .status(400)
-            .send({ message: `The unable to ${status} user account` });
-        }
+  getRowById("user", req.sessionData.userId)
+    .then((_row) => {
+      updateRow("user", {
+        query: {
+          expressions: [
+            {
+              field: "sys_Id",
+              operand: "=",
+              value: _row.data.sys_Id,
+            },
+            {
+              field: "role",
+              operand: "=",
+              value: req.params.role,
+            },
+          ],
+          operator: "and",
+        },
+        data: {
+          enable: req.body.enable,
+        },
       })
-      .catch(next);
-  }).catch(next);
+        .then((response) => {
+          const status = req.body.enable ? "Enable" : "Disable";
+          if (response.data && response.data.nModified === 1) {
+            res.status(200).send({
+              message: `The user account is ${status} successfully`,
+            });
+          } else {
+            res
+              .status(400)
+              .send({ message: `The unable to ${status} user account` });
+          }
+        })
+        .catch(next);
+    })
+    .catch(next);
 };
 
 module.exports.getProfileDetails = (req, res, next) => {
-  getRowById("user", req.params.role === "admin"
-    ? req.sessionData.adminId
-    : req.sessionData.userId)
+  getRowById(
+    "user",
+    req.params.role === "admin"
+      ? req.sessionData.adminId
+      : req.sessionData.userId
+  )
     .then((dbRes) => {
       if (dbRes.data) {
         res.status(200).send({
