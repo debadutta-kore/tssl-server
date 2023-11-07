@@ -17,7 +17,7 @@ const {
     getAllUsecaseData,
 } = require("./usecases");
 const validation = require("../middlewares/validation");
-const { buildSchema, emailSchema, passwordSchema, roleSchema } = require("../utilities/validationSchema");
+const { buildSchema, emailSchema, passwordSchema } = require("../utilities/validationSchema");
 const sendEmail = require("./sendEmail");
 const formDataParser = require("../middlewares/formDataParser");
 
@@ -35,8 +35,7 @@ router.put('/account/:role/access', protectRoute , activeDeactiveUser);
 router.get('/account/:role/details', protectRoute, getProfileDetails);
 router.put("/account/resetpassword", validation(buildSchema({
     email: emailSchema,
-    password: passwordSchema,
-    role: roleSchema
+    password: passwordSchema
 })) , updateUserData);
 
 // routes for usecases

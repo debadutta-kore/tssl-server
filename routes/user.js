@@ -1,5 +1,4 @@
 const { addRow, deleteRow, getRows, updateRow, getRowById } = require("../db");
-const bcrypt = require("bcrypt");
 const url = require('url');
 const sendInvitation = require("../utilities/sendInvitation");
 
@@ -12,7 +11,7 @@ module.exports.addUserData = (req, res, next) => {
     if (_res.data && _res.data.records.length === 0) {
       addRow("user", {
         email: req.body.email,
-        password: bcrypt.hashSync(req.body.password, 10),
+        password: req.body.password,
         name: req.body.name,
         role: req.params.role,
         enable: 1,
@@ -48,17 +47,12 @@ module.exports.updateUserData = (req, res, next) => {
           field: "email",
           operand: "=",
           value: req.body.email,
-        },
-        {
-          field: "role",
-          operand: "=",
-          value: req.body.role,
-        },
+        }
       ],
       operator: "and",
     },
     data: {
-      password: bcrypt.hashSync(req.body.password, 10),
+      password: req.body.password,
     },
   })
     .then((response) => {

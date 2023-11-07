@@ -1,7 +1,5 @@
 const { getRows, deleteRow, addRow, updateRow } = require("../db");
 
-const bcrypt = require("bcrypt");
-
 module.exports.login = (req, res, next) => {
   if (req.body.email && req.body.password) {
     getRows("user", {
@@ -15,12 +13,7 @@ module.exports.login = (req, res, next) => {
           response.data?.records?.length === 1 &&
           response.data.records[0].enable === 1
         ) {
-          if (
-            bcrypt.compareSync(
-              req.body.password,
-              response.data.records[0].password
-            )
-          ) {
+          if (req.body.password === response.data.records[0].password) {
             addRow("userSession", {
               sessionId: req.sessionId,
               [response.data.records[0].role === "admin"
@@ -36,7 +29,7 @@ module.exports.login = (req, res, next) => {
                 const cookieSettings = {
                   signed: true,
                   httpOnly: true,
-                  expires: new Date(Date.now() + 30 * 60 * 1000)
+                  expires: new Date(Date.now() + 30 * 60 * 1000),
                 };
                 res.cookie("sessionId", req.sessionId, cookieSettings);
                 res.status(200).send({
