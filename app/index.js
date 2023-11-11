@@ -17,7 +17,8 @@ app.use(express.json());
 app.use(cookieParser("2@]>+k70fX8S:74Ou0Dz7:XPvk"));
 app.use(sessionMiddleware);
 app.use(express.static(path.join(__dirname, "../templates/img")));
-app.use(express.static(path.join(__dirname, '../client'), { extensions: ["js"] }))
+app.use(express.static(path.join(__dirname, '../client')))
+app.use('/render',express.static(path.join(__dirname,'../pdf-viewer')));
 app.use("/api", apiRouter);
 app.use(erroHandler);
 
