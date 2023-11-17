@@ -9,21 +9,26 @@ const sessionMiddleware = require("../middlewares/sessionMiddleWare");
 const cors = require("../middlewares/cors");
 const erroHandler = require("../middlewares/erroHandler");
 
-app.enable('trust proxy');
+app.enable("trust proxy");
 
 //global middlewares
 app.use(cors);
 app.use(express.json());
-app.use(cookieParser("2@]>+k70fX8S:74Ou0Dz7:XPvk"));
+app.use(cookieParser(process.env.cookieSignedKey));
 app.use(sessionMiddleware);
-app.use(express.static(path.join(__dirname, "../templates/img")));
-app.use(express.static(path.join(__dirname, '../client')))
-app.use('/render',express.static(path.join(__dirname,'../pdf-viewer')));
-app.use("/api", apiRouter);
+app.use(
+  process.env.rootPath + "asset/email",
+  express.static(path.join(__dirname, "../templates/img"))
+);
+app.use(
+  process.env.rootPath,
+  express.static(path.join(__dirname, "../client"))
+);
+app.use(process.env.rootPath + "api", apiRouter);
 app.use(erroHandler);
 
-app.get("*", (_, res) => {
-  res.sendFile(path.join(__dirname, '../client/index.html'));
+app.get(process.env.rootPath + "*", (_, res) => {
+  res.sendFile(path.join(__dirname, "../client/index.html"));
 });
 
 module.exports.app = app;

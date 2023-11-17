@@ -2,15 +2,16 @@ const ejs = require("ejs");
 const { readFileSync } = require("fs");
 const path = require("path");
 const mail = require("@sendgrid/mail");
-module.exports = async (to, { name, password, hostUrl }) => {
+module.exports = async (to, { name, password,assetBaseUrl,baseurl }) => {
   try {
    const htmlStr = await ejs
     .renderFile(path.join(__dirname, "../templates/invite.ejs"), {
       name,
       email: to,
       password: password,
-      companyLogo: hostUrl + "/company-logo.png",
-      productLogo: hostUrl + "/product-logo.png",
+      companyLogo: assetBaseUrl+ "/company-logo.png",
+      productLogo: assetBaseUrl + "/product-logo.png",
+      baseurl
     });
     await mail.send({
       from: "travelassistdev@kore.com",

@@ -1,4 +1,6 @@
 const { getRows, deleteRow, addRow, updateRow } = require("../db");
+const jwt = require("jsonwebtoken");
+const cookieSettings = require("../utilities/cookieSettings");
 
 module.exports.login = (req, res, next) => {
   if (req.body.email && req.body.password) {
@@ -14,8 +16,7 @@ module.exports.login = (req, res, next) => {
           response.data.records[0].enable === 1
         ) {
           if (req.body.password === response.data.records[0].password) {
-            addRow("userSession", {
-              sessionId: req.sessionId,
+            const userInfo = {
               [response.data.records[0].role === "admin"
                 ? "adminId"
                 : "userId"]: response.data.records[0]._id,
@@ -23,21 +24,15 @@ module.exports.login = (req, res, next) => {
                 ? "userId"
                 : "adminId"]: "",
               role: response.data.records[0].role,
-            })
-              .then(() => {
-                // Save the new session ID in the response
-                const cookieSettings = {
-                  signed: true,
-                  httpOnly: true,
-                  expires: new Date(Date.now() + 30 * 60 * 1000),
-                };
-                res.cookie("sessionId", req.sessionId, cookieSettings);
-                res.status(200).send({
-                  message: "Successfully logged in",
-                  role: response.data.records[0].role,
-                });
-              })
-              .catch(next);
+            };
+            res.cookie("session", jwt.sign(userInfo, process.env.jwtSecret), {
+              ...cookieSettings,
+              expires: new Date(Date.now() + 30 * 60 * 1000),
+            });
+            res.status(200).send({
+              message: "Successfully logged in",
+              role: response.data.records[0].role,
+            });
           } else {
             res.status(400).send({ password: "Wrong password" });
           }
@@ -66,74 +61,32 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.loginWithSession = (req, res, next) => {
-  getRows("userSession", {
-    query: {
-      sessionId: req.sessionId,
-    },
-  })
-    .then((dbRes) => {
-      if (dbRes.data && dbRes.data.records.length > 0) {
-        const record = dbRes.data.records[0];
-        let data = {
-          role: record.role,
-          message: "Successfully Logedin",
-        };
-        if (record.role === "admin") {
-          data.isChoosedUser = !!record.userId;
-        }
-        res.status(200).json(data);
-      } else {
-        res.status(401).send({
-          message:
-            "Your session ID is not valid or your account has been disabled by the admin",
-        });
-      }
-    })
-    .catch(next);
+  let data = {
+    role: req.sessionData.role,
+    message: "Successfully Logedin",
+  };
+  if (req.sessionData.role === "admin") {
+    data.isChoosedUser = !!req.sessionData.userId;
+  }
+  res.status(200).json(data);
 };
 
 module.exports.deleteUserSession = (req, res, next) => {
-  deleteRow("userSession", req.sessionData._id)
-    .then((dbRes) => {
-      if (dbRes.data && dbRes.data.nDeleted) {
-        const cookieSettings = {
-          signed: true,
-          httpOnly: true,
-          expires: new Date(Date.now() - 30 * 60 * 1000),
-        };
-        res.cookie("sessionId", req.sessionId, cookieSettings);
-        res.status(204).send();
-      } else {
-        res.status(404).send({ message: "Unable to logout" });
-      }
-    })
-    .catch(next);
+  const deleteCookieSettings = {
+    ...cookieSettings,
+    expires: new Date(Date.now() - 30 * 60 * 1000),
+  };
+  res.cookie("session", "", deleteCookieSettings);
+  res.status(204).send();
 };
 
 module.exports.updateUserSession = async (req, res, next) => {
-  updateRow("userSession", {
-    query: {
-      expressions: [
-        {
-          field: "sessionId",
-          operand: "=",
-          value: req.sessionId,
-        },
-      ],
-      operator: "and",
-    },
-    data: {
-      userId: req.body.userId,
-    },
-  })
-    .then((updateRes) => {
-      if (updateRes.data && updateRes.data.nModified === 1) {
-        res.status(200).send({
-          message: "successfully update the session",
-        });
-      } else {
-        res.status(404).send({ message: "session not found" });
-      }
-    })
-    .catch(next);
+  req.sessionData.userId = req.body.userId;
+  res.cookie("session", jwt.sign(req.sessionData, process.env.jwtSecret), {
+    ...cookieSettings,
+    expires: new Date(Date.now() + 30 * 60 * 1000),
+  });
+  res.status(200).send({
+    message: "successfully update the session",
+  });
 };

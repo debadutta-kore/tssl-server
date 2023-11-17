@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const axios = require("axios").default;
+const { Agent } = require("http");
 const request = axios.create({
   baseURL: "https://bots.kore.ai/api/1.1/public",
   headers: {
@@ -14,6 +15,7 @@ const request = axios.create({
       { algorithm: "HS256" }
     ),
   },
+  httpAgent: new Agent({ keepAlive: true }),
   validateStatus: (status) => status < 300,
 });
 

@@ -18,7 +18,7 @@ module.exports = (req, res, next) => {
       .send({
         from: "travelassistdev@kore.com",
         to: [req.body.to, "foodassistdev@kore.com"],
-        subject: `${req.body.queryType}-${req.body.subject}`,
+        subject: `${req.body.queryType} - ${req.body.subject}`,
         html: htmlStr,
         attachments: req.files.map((file) => ({
           content: file.content,

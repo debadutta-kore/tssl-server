@@ -1,38 +1,30 @@
-const { getRows } = require("../db");
-
-const uuid = require("uuid").v4;
-
+const cookieSettings = require("../utilities/cookieSettings");
+const jwt = require("jsonwebtoken");
 const sessionMiddleware = (req, res, next) => {
-  if (!req?.signedCookies?.sessionId) {
-    // Generate a new session ID if it doesn't exist
-    const sessionId = uuid();
-    req.sessionId = sessionId;
-    next();
-  } else {
-    // Extract the session ID from the cookie
-    req.sessionId = req.signedCookies.sessionId;
-    const cookieSettings = {
-      signed: true,
-      httpOnly: true,
-      expires: new Date(Date.now() + 30 * 60 * 1000),
-    };
-    res.cookie("sessionId", req.sessionId, cookieSettings);
-    getRows("userSession", {
-      query: {
-        sessionId: req.sessionId,
-      },
-    })
-      .then((response) => {
-        if (response.data.records.length > 0) {
-          req.sessionData = response.data.records[0];
+  if (req?.signedCookies?.session) {
+    // Extract the session from the cookie
+    jwt.verify(
+      req.signedCookies.session,
+      process.env.jwtSecret,
+      (err, data) => {
+        if (err) {
+          next(err);
         } else {
-          res
-            .status(401)
-            .send({ message: "Unauthorized access to current route" });
+          req.sessionData = data;
+          res.cookie(
+            "session",
+            jwt.sign(req.sessionData, process.env.jwtSecret),
+            {
+              ...cookieSettings,
+              expires: new Date(Date.now() + 30 * 60 * 1000),
+            }
+          );
+          next();
         }
-        next();
-      })
-      .catch(next);
+      }
+    );
+  } else {
+    next();
   }
 };
 

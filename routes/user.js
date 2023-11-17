@@ -2,7 +2,7 @@ const { addRow, deleteRow, getRows, updateRow, getRowById } = require("../db");
 const url = require("url");
 const sendInvitation = require("../utilities/sendInvitation");
 
-module.exports.addUserData = (req, res, next) => {
+module.exports.addUser = (req, res, next) => {
   getRows("user", {
     query: {
       email: req.body.email,
@@ -14,7 +14,7 @@ module.exports.addUserData = (req, res, next) => {
           email: req.body.email,
           password: req.body.password,
           name: req.body.name,
-          role: req.params.role,
+          role: "user",
           enable: 1,
         })
           .then(async (response) => {
@@ -23,10 +23,15 @@ module.exports.addUserData = (req, res, next) => {
                 await sendInvitation(req.body.email, {
                   name: req.body.name,
                   password: req.body.password,
-                  hostUrl: url.format({
+                  assetBaseUrl: url.format({
                     protocol: req.protocol,
                     host: req.get("host"),
+                    pathname: process.env.rootPath + "asset/email"
                   }),
+                  baseurl: url.format({
+                    protocol: req.protocol,
+                    host: req.get("host")
+                  })
                 });
               }
               res.status(201).send({
@@ -44,7 +49,7 @@ module.exports.addUserData = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.updateUserData = (req, res, next) => {
+module.exports.updateUser = (req, res, next) => {
   updateRow("user", {
     query: {
       expressions: [
@@ -72,7 +77,7 @@ module.exports.updateUserData = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.deleteUserData = (req, res, next) => {
+module.exports.deleteUser = (req, res, next) => {
   deleteRow("user", req.params.id)
     .then((response) => {
       if (response.data && response.data.nDeleted === 1) {
@@ -84,10 +89,10 @@ module.exports.deleteUserData = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getAllUserData = (req, res, next) => {
+module.exports.getAllUser = (req, res, next) => {
   getRows("user", {
     query: {
-      role: req.params.role,
+      role: "user",
     },
   })
     .then((response) => {
@@ -122,7 +127,7 @@ module.exports.activeDeactiveUser = (req, res, next) => {
             {
               field: "role",
               operand: "=",
-              value: req.params.role,
+              value: req.sessionData.role,
             },
           ],
           operator: "and",
@@ -151,9 +156,7 @@ module.exports.activeDeactiveUser = (req, res, next) => {
 module.exports.getProfileDetails = (req, res, next) => {
   getRowById(
     "user",
-    req.params.role === "admin"
-      ? req.sessionData.adminId
-      : req.sessionData.userId
+    req.sessionData.userId
   )
     .then((dbRes) => {
       if (dbRes.data) {
