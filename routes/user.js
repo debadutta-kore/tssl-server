@@ -19,26 +19,25 @@ module.exports.addUser = (req, res, next) => {
         })
           .then(async (response) => {
             if (response.data) {
-              if (req.params.role === "user") {
                 await sendInvitation(req.body.email, {
                   name: req.body.name,
                   password: req.body.password,
                   assetBaseUrl: url.format({
                     protocol: req.protocol,
                     host: req.get("host"),
-                    pathname: process.env.rootPath + "asset/email"
+                    pathname: process.env.rootPath + "asset/email",
                   }),
                   baseurl: url.format({
                     protocol: req.protocol,
-                    host: req.get("host")
-                  })
+                    host: req.get("host"),
+                  }),
                 });
-              }
-              res.status(201).send({
-                name: response.data.name,
-                id: response.data._id,
-                enable: 1,
-              });
+                
+                res.status(201).send({
+                  name: response.data.name,
+                  id: response.data._id,
+                  enable: 1,
+                });
             }
           })
           .catch(next);
