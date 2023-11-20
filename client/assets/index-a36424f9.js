@@ -1,1 +1,0 @@
-import{u as r,r as s,j as t,C as h}from"./index-7b4b8b41.js";function c(){const{usecaseInfo:e}=r(),[a,n]=s.useState(!0),o=s.useRef(null);return t.jsxs(t.Fragment,{children:[a&&t.jsx(h,{icon:e.icon,name:e.name,theme:e.theme}),t.jsx("iframe",{src:e.config.url,width:"100%",height:"100%",onLoad:()=>n(!1),ref:o})]})}export{c as default};
