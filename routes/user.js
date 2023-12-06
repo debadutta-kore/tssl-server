@@ -126,7 +126,7 @@ module.exports.activeDeactiveUser = (req, res, next) => {
             {
               field: "role",
               operand: "=",
-              value: req.sessionData.role,
+              value: 'user',
             },
           ],
           operator: "and",
@@ -136,15 +136,15 @@ module.exports.activeDeactiveUser = (req, res, next) => {
         },
       })
         .then((response) => {
-          const status = req.body.enable ? "Enable" : "Disable";
+          const status = req.body.enable ? "enabled" : "disabled";
           if (response.data && response.data.nModified === 1) {
             res.status(200).send({
               message: `The user account is ${status} successfully`,
             });
           } else {
             res
-              .status(400)
-              .send({ message: `The unable to ${status} user account` });
+              .status(500)
+              .send({ message: 'Something went wrong' });
           }
         })
         .catch(next);
