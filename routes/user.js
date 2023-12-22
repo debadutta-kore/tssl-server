@@ -22,17 +22,11 @@ module.exports.addUser = (req, res, next) => {
                 await sendInvitation(req.body.email, {
                   name: req.body.name,
                   password: req.body.password,
-                  assetBaseUrl: url.format({
-                    protocol: req.protocol,
-                    host: req.get("host"),
-                    pathname: process.env.rootPath + "asset/email",
-                  }),
-                  baseurl: url.format({
+                  url: url.format({
                     protocol: req.protocol,
                     host: req.get("host"),
                   }),
                 });
-                
                 res.status(201).send({
                   name: response.data.name,
                   id: response.data._id,
