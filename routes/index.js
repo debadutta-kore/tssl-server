@@ -31,6 +31,7 @@ const {
 const sendEmail = require("./sendEmail");
 const formDataParser = require("../middlewares/formDataParser");
 const onlyAccessBy = require("../middlewares/onlyAccessBy");
+const { modifySessionTimeout, getSessionTimeout } = require("./sessionTImeout");
 
 // routes for authentication
 router.post("/auth/login", login);
@@ -97,5 +98,9 @@ router.get(
 );
 // email route
 router.post("/email", protectRoute, formDataParser, sendEmail);
+
+//session timeout route
+router.put('/timeout', modifySessionTimeout);
+router.get('/timeout', getSessionTimeout);
 
 module.exports = router;

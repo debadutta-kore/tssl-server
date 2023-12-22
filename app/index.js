@@ -8,8 +8,10 @@ const apiRouter = require("../routes");
 const sessionMiddleware = require("../middlewares/sessionMiddleWare");
 const cors = require("../middlewares/cors");
 const erroHandler = require("../middlewares/erroHandler");
+const globalSessionTimeout = require('../utilities/globalSessionTimeout');
 
 app.enable("trust proxy");
+globalSessionTimeout.init();
 
 //global middlewares
 app.use(cors);

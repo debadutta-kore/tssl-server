@@ -1,8 +1,10 @@
 const { getRows, deleteRow, addRow, updateRow } = require("../db");
 const jwt = require("jsonwebtoken");
 const cookieSettings = require("../utilities/cookieSettings");
+const globalSessionTimeout = require("../utilities/globalSessionTimeout");
 
 module.exports.login = (req, res, next) => {
+  const sessionTimeout = globalSessionTimeout.getSessionTimeout();
   if (req.body.email && req.body.password) {
     getRows("user", {
       query: {
@@ -27,7 +29,7 @@ module.exports.login = (req, res, next) => {
             };
             res.cookie("session", jwt.sign(userInfo, process.env.jwtSecret), {
               ...cookieSettings,
-              expires: new Date(Date.now() + 30 * 60 * 1000),
+              expires: new Date(Date.now() + sessionTimeout),
             });
             res.status(200).send({
               message: "Successfully logged in",
@@ -72,9 +74,10 @@ module.exports.loginWithSession = (req, res, next) => {
 };
 
 module.exports.deleteUserSession = (req, res, next) => {
+  const sessionTimeout = globalSessionTimeout.getSessionTimeout();
   const deleteCookieSettings = {
     ...cookieSettings,
-    expires: new Date(Date.now() - 30 * 60 * 1000),
+    expires: new Date(Date.now() - sessionTimeout),
   };
   res.cookie("session", "", deleteCookieSettings);
   res.status(204).send();
@@ -82,9 +85,10 @@ module.exports.deleteUserSession = (req, res, next) => {
 
 module.exports.updateUserSession = async (req, res, next) => {
   req.sessionData.userId = req.body.userId;
+  const sessionTimeout = globalSessionTimeout.getSessionTimeout();
   res.cookie("session", jwt.sign(req.sessionData, process.env.jwtSecret), {
     ...cookieSettings,
-    expires: new Date(Date.now() + 30 * 60 * 1000),
+    expires: new Date(Date.now() + sessionTimeout),
   });
   res.status(200).send({
     message: "successfully update the session",
