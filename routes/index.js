@@ -6,7 +6,7 @@ const {
   deleteUserSession,
   updateUserSession,
 } = require("./auth");
-const { protectRoute } = require("../middlewares/protecteRoute");
+const { protectRoute } = require("../middlewares/protectRoute");
 const {
   addUser,
   updateUser,
