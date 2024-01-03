@@ -35,18 +35,8 @@ const { modifySessionTimeout, getSessionTimeout } = require("./sessionTImeout");
 
 // routes for authentication
 router.post("/auth/login", login);
-router.get(
-  "/auth/session",
-  protectRoute,
-  onlyAccessBy("admin"),
-  loginWithSession
-);
-router.put(
-  "/auth/session",
-  protectRoute,
-  onlyAccessBy("admin"),
-  updateUserSession
-);
+router.get("/auth/session", protectRoute, loginWithSession);
+router.put("/auth/session", protectRoute, updateUserSession);
 router.delete("/auth/logout", protectRoute, deleteUserSession);
 
 // routes for users
@@ -100,7 +90,7 @@ router.get(
 router.post("/email", protectRoute, formDataParser, sendEmail);
 
 //session timeout route
-router.put('/timeout', modifySessionTimeout);
-router.get('/timeout', getSessionTimeout);
+router.put("/timeout", modifySessionTimeout);
+router.get("/timeout", getSessionTimeout);
 
 module.exports = router;
