@@ -25,7 +25,7 @@ module.exports.addUser = (req, res, next) => {
                   url: url.format({
                     protocol: req.protocol,
                     host: req.get("host"),
-                    pathname:'/'+process.env.rootPath+'/'
+                    pathname: process.env.rootPath+'/'
                   }),
                 });
                 res.status(201).send({
